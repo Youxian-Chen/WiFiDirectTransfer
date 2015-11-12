@@ -22,6 +22,7 @@
             </intent-filter>
         </activity>
         <receiver android:name=".WiFiDirectReceiver" />
+        <receiver android:name=".MainReceiver" />
         <service android:name=".ServerService" />
     </application>
 

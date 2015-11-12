@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * Created by Youxian on 11/11/15.
  */
-public class TransferFragment extends ListFragment implements WifiP2pManager.PeerListListener{
+public class TransferFragment extends ListFragment {
 
     private static final String TAG = TransferFragment.class.getName();
     private List<Music> mFiles;
@@ -119,19 +119,19 @@ public class TransferFragment extends ListFragment implements WifiP2pManager.Pee
 
     private void connectP2p(WifiP2pDevice device){
         WifiP2pConfig config = new WifiP2pConfig();
-        config.deviceAddress = device.deviceAddress;
         config.groupOwnerIntent = 0;
+        config.deviceAddress = device.deviceAddress;
         config.wps.setup = WpsInfo.PBC;
         mWifiP2pManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
 
             @Override
             public void onSuccess() {
-                Log.d(TAG, "Succeed connecting to service");
+                Log.d(TAG, "Succeed connecting");
             }
 
             @Override
             public void onFailure(int errorCode) {
-                Log.d(TAG, "Failed connecting to service");
+                Log.d(TAG, "Failed connecting");
             }
         });
     }
@@ -141,13 +141,10 @@ public class TransferFragment extends ListFragment implements WifiP2pManager.Pee
         Log.d(TAG, "Select files: " + mFiles.size());
     }
 
-    @Override
-    public void onPeersAvailable(WifiP2pDeviceList peers) {
-        Log.d(TAG, "peer available");
+    public void updateList(WifiP2pDeviceList peers){
         mPeerList.clear();
         mPeerList.addAll(peers.getDeviceList());
-        Log.d(TAG, mPeerList.get(0).deviceName);
-        //((WiFiP2pDeviceAdapter)getListAdapter()).notifyDataSetChanged();
+        ((WiFiP2pDeviceAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
     private class WiFiP2pDeviceAdapter extends ArrayAdapter<WifiP2pDevice> {
@@ -169,14 +166,11 @@ public class TransferFragment extends ListFragment implements WifiP2pManager.Pee
             }
             WifiP2pDevice device = mDeviceList.get(position);
             if (device != null) {
-                TextView nameText = (TextView) v
-                        .findViewById(android.R.id.text1);
-
+                TextView nameText = (TextView) v.findViewById(android.R.id.text1);
                 if (nameText != null) {
                     nameText.setText(device.deviceName);
                 }
-                TextView statusText = (TextView) v
-                        .findViewById(android.R.id.text2);
+                TextView statusText = (TextView) v.findViewById(android.R.id.text2);
                 statusText.setText(getDeviceStatus(device.status));
             }
             return v;

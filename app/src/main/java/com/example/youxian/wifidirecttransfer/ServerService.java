@@ -28,7 +28,7 @@ public class ServerService extends IntentService {
      */
 
     private static final String TAG = ServerService.class.getName();
-    public static final String ACTION_SYNC = "action_sync";
+    public static final String ACTION_RECEIVE = "action_receive";
     public ServerService(String name) {
         super(name);
     }
@@ -40,7 +40,7 @@ public class ServerService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         String action = intent.getAction();
-        if (ACTION_SYNC.equals(action)){
+        if (ACTION_RECEIVE.equals(action)){
             Log.d(TAG, action);
             String dirPath = android.os.Environment.getExternalStorageDirectory() + "/Music";
             File dir = new File(dirPath);
@@ -75,7 +75,7 @@ public class ServerService extends IntentService {
                     for(int j = 0; j < fileLength; j++){
                         bos.write(bis.read());
                     }
-                    Log.d(TAG, "get file" + fileName);
+                    Log.d(TAG, "get file: " + fileName);
                     bos.close();
                     new MediaScannerWrapper(getApplicationContext(), dirPath + "/" + fileName, "music/*").scan();
                 }
@@ -86,6 +86,9 @@ public class ServerService extends IntentService {
                 Log.e(TAG, e.getMessage());
 
             }
+            Intent transferDoneIntent = new Intent();
+            transferDoneIntent.setAction(MainReceiver.ACTION_TRANSFER_DONE);
+            sendBroadcast(transferDoneIntent);
             stopSelf();
         }
     }

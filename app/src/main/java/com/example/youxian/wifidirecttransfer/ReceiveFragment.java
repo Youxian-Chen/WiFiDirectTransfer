@@ -108,6 +108,20 @@ public class ReceiveFragment extends Fragment {
         mHandler.removeCallbacks(mRunnable);
     }
 
+    public void disconnect(){
+        mWifiP2pManager.removeGroup(mChannel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                Log.d(TAG, "disconnect success");
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                Log.d(TAG, "disconnect failed");
+            }
+        });
+    }
+
     public void setListener(Listener listener){
         mListener = listener;
     }

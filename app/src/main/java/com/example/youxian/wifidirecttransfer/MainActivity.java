@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.AsyncTask;
@@ -23,11 +26,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity implements WifiP2pManager.ConnectionInfoListener{
+public class MainActivity extends Activity implements WifiP2pManager.ConnectionInfoListener, WifiP2pManager.PeerListListener{
 
     private static final String TAG = MainActivity.class.getName();
     private ProgressDialog mProgressDialog;
-    private TransferFilesTask mTransferFilesTask;
+    private IntentFilter mIntentFilter = new IntentFilter();
+    private BroadcastReceiver mReceiver;
 
 
     private MainFragment mMainFragment;
@@ -36,18 +40,27 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
     private TransferFragment mTransferFragment;
 
     private List<Music> mMusic;
-
+    private TransferFilesTask mTransferFilesTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
+        mReceiver = new MainReceiver(this);
+        mIntentFilter.addAction(MainReceiver.ACTION_TRANSFER_DONE);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        registerReceiver(mReceiver, mIntentFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mReceiver);
     }
 
     @Override
@@ -107,7 +120,7 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
     }
 
     public TransferFragment getTransferFragment(){
-        if (mTransferFilesTask == null) {
+        if (mTransferFragment == null) {
             mTransferFragment = new TransferFragment();
         }
         return mTransferFragment;
@@ -125,27 +138,38 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
         getTransferFragment().stopDiscover();
     }
 
+    public void transferDone(){
+        if (mProgressDialog != null)
+            mProgressDialog.dismiss();
+        getReceiveFragment().disconnect();
+    }
+
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
         Log.d(TAG, "Connect success");
         Log.d(TAG, info.groupOwnerAddress.getHostAddress());
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage("Transfer files...");
+        mProgressDialog.setCancelable(false);
         if (info.isGroupOwner) {
             Intent receiveIntent = new Intent(this, ServerService.class);
-            receiveIntent.setAction(ServerService.ACTION_SYNC);
+            receiveIntent.setAction(ServerService.ACTION_RECEIVE);
             this.startService(receiveIntent);
         } else {
             if (mTransferFilesTask == null) {
-                mProgressDialog = new ProgressDialog(this);
                 mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                mProgressDialog.setMessage("Transfer files...");
                 mProgressDialog.setProgress(0);
-                mProgressDialog.setCancelable(false);
                 new TransferFilesTask(mSelectFileFragment.getSelectedMusics(),
                         info.groupOwnerAddress.getHostAddress(), "1234").execute("");
-                mProgressDialog.show();
             } else mTransferFilesTask = null;
         }
+        mProgressDialog.show();
+    }
 
+    @Override
+    public void onPeersAvailable(WifiP2pDeviceList peers) {
+        if (mTransferFragment != null)
+            mTransferFragment.updateList(peers);
     }
 
     private class TransferFilesTask extends AsyncTask<String, Integer, Long> {
@@ -216,6 +240,7 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
                     }
                 }
                 Log.d(TAG, "Client: stop service");
+                mProgressDialog.dismiss();
                 this.cancel(true);
             }
             return null;
