@@ -42,6 +42,8 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
     private List<Music> mMusic;
     private TransferFilesTask mTransferFilesTask;
 
+    private static final int File_Chooser = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +70,18 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
         super.onDestroy();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == File_Chooser) {
+            if (resultCode == RESULT_OK) {
+                if (data.getAction().equals(Intent.ACTION_SEND_MULTIPLE)) {
+
+                }
+            }
+            Log.d(TAG, "onActivityResult");
+        }
+    }
+
     private void initView(){
         replaceFragment(getMainFragment(), false);
     }
@@ -87,7 +101,10 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
             mMainFragment.setListener(new MainFragment.Listener() {
                 @Override
                 public void onTransferClick() {
-                    replaceFragment(getSelectFileFragment(), true);
+                    //replaceFragment(getSelectFileFragment(), true);
+                    Intent fileChooserIntent = new Intent(MainActivity.this,
+                            com.example.youxian.filechooser.MainActivity.class);
+                    startActivityForResult(fileChooserIntent, File_Chooser);
                 }
 
                 @Override
