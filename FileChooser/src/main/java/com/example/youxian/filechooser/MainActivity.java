@@ -1,8 +1,10 @@
 package com.example.youxian.filechooser;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Environment;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,12 +16,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getName();
+    public static final  String SELECTED_FILES = "selected_files";
     private TextView mPathText;
     private Button mCancelButton;
     private Button mOkButton;
@@ -56,7 +60,8 @@ public class MainActivity extends Activity {
         mCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                setResult(RESULT_CANCELED);
+                finish();
             }
         });
 
@@ -65,6 +70,11 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "select files: " + getSelectedFiles().size());
+                Intent selectedIntent = new Intent();
+                selectedIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
+                selectedIntent.putExtra(SELECTED_FILES, (Serializable) mSelectFiles);
+                setResult(RESULT_OK, selectedIntent);
+                finish();
             }
         });
 

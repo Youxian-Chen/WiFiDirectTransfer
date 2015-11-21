@@ -11,7 +11,6 @@ import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -41,7 +40,7 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
 
     private List<Music> mMusic;
     private TransferFilesTask mTransferFilesTask;
-
+    private List<File> mSelectedFiles;
     private static final int File_Chooser = 1;
 
     @Override
@@ -72,13 +71,18 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult");
         if (requestCode == File_Chooser) {
             if (resultCode == RESULT_OK) {
                 if (data.getAction().equals(Intent.ACTION_SEND_MULTIPLE)) {
-
+                    mSelectedFiles = (List<File>) data.getSerializableExtra
+                            (com.example.youxian.filechooser.MainActivity.SELECTED_FILES);
+                    Log.d(TAG, mSelectedFiles.size()+ "");
+                    if (mSelectedFiles.size() > 0) {
+                        replaceFragment(getTransferFragment(), true);
+                    }
                 }
             }
-            Log.d(TAG, "onActivityResult");
         }
     }
 
@@ -176,7 +180,7 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
             if (mTransferFilesTask == null) {
                 mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                 mProgressDialog.setProgress(0);
-                new TransferFilesTask(mSelectFileFragment.getSelectedMusics(),
+                new TransferFilesTask(mSelectedFiles,
                         info.groupOwnerAddress.getHostAddress(), "1234").execute("");
             } else mTransferFilesTask = null;
         }
@@ -193,9 +197,11 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
         private String mAddress;
         private String mPort;
         private List<Music> mMusics = new ArrayList<>();
+        private List<File> mFiles = new ArrayList<>();
         private static final int SOCKET_TIMEOUT = 5000;
-        public TransferFilesTask(List<Music> musics, String address, String port){
-            mMusics = musics;
+        public TransferFilesTask(List<File> files, String address, String port){
+            //mMusics = musics;
+            mFiles = files;
             mAddress = address;
             mPort = port;
         }
@@ -215,13 +221,13 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
                     BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
                     DataOutputStream dos = new DataOutputStream(bos);
 
-                    dos.writeInt(mMusics.size());
-                    Log.d(TAG, mMusics.size()+"");
-                    int added = 100 / mMusics.size() + 1;
+                    dos.writeInt(mFiles.size());
+                    Log.d(TAG, mFiles.size()+"");
+                    int added = 100 / mFiles.size() + 1;
                     int status = 0;
-                    for (Music music : mMusics){
-                        File file = new File(music.getPath());
-                        Log.d(TAG, music.getPath());
+                    for (File file : mFiles){
+                        //File file = new File(music.getPath());
+                        Log.d(TAG, file.getPath());
                         long length = file.length();
                         dos.writeLong(length);
                         String name = file.getName();

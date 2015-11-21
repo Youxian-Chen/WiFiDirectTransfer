@@ -22,6 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.example.youxian.filechooser.MainActivity" />
         <receiver android:name=".WiFiDirectReceiver" />
         <receiver android:name=".MainReceiver" />
         <service android:name=".ServerService" />
