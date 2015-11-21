@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import java.util.List;
+
 /**
  * Created by Youxian on 11/12/15.
  */
@@ -27,7 +29,8 @@ public class MainReceiver extends BroadcastReceiver {
         String action = intent.getAction();
         if (action.equals(ACTION_TRANSFER_DONE)) {
             Log.d(TAG, "transfer done");
-            mActivity.transferDone();
+            List<String> mFileNames = intent.getStringArrayListExtra(ServerService.FILES_NAME);
+            mActivity.transferDone(mFileNames);
         }
     }
 }

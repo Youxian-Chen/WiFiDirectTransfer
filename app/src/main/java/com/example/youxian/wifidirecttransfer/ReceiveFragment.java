@@ -13,7 +13,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Youxian on 11/11/15.
@@ -27,8 +33,13 @@ public class ReceiveFragment extends Fragment {
     private IntentFilter mIntentFilter;
     private BroadcastReceiver mReceiver;
 
+
+    private List<String> mNames;
+    private ResultListAdapter mAdapter;
     private Listener mListener;
     private TextView mDeviceName;
+    private TextView mConnectStatus;
+    private ListView mList;
     private WifiP2pDevice mDevice;
     private Handler mHandler = new Handler();
     private Runnable mRunnable = new Runnable() {
@@ -71,6 +82,23 @@ public class ReceiveFragment extends Fragment {
         mWifiP2pManager = (WifiP2pManager) getActivity().getSystemService(Context.WIFI_P2P_SERVICE);
         mChannel = mWifiP2pManager.initialize(getActivity(), getActivity().getMainLooper(), null);
         mReceiver = new WiFiDirectReceiver(mWifiP2pManager, mChannel, (MainActivity)getActivity());
+        deletePersistentGroups();
+    }
+
+    private void deletePersistentGroups(){
+        try {
+            Method[] methods = WifiP2pManager.class.getMethods();
+            for (int i = 0; i < methods.length; i++) {
+                if (methods[i].getName().equals("deletePersistentGroup")) {
+                    // Delete any persistent group
+                    for (int netid = 0; netid < 32; netid++) {
+                        methods[i].invoke(mWifiP2pManager, mChannel, netid, null);
+                    }
+                }
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Nullable
@@ -83,6 +111,12 @@ public class ReceiveFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mDeviceName = (TextView) view.findViewById(R.id.device_text_receive);
+        mConnectStatus = (TextView) view.findViewById(R.id.status_text_receive);
+        mList = (ListView) view.findViewById(R.id.list_receive);
+        mNames = new ArrayList<>();
+        mAdapter = new ResultListAdapter(getActivity(),
+                android.R.layout.simple_list_item_1, android.R.id.text1, mNames);
+        mList.setAdapter(mAdapter);
     }
 
     public void setDevice(WifiP2pDevice device){
@@ -108,7 +142,7 @@ public class ReceiveFragment extends Fragment {
         mHandler.removeCallbacks(mRunnable);
     }
 
-    public void disconnect(){
+    public void disconnect(List<String> names){
         mWifiP2pManager.removeGroup(mChannel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
@@ -120,6 +154,40 @@ public class ReceiveFragment extends Fragment {
                 Log.d(TAG, "disconnect failed");
             }
         });
+        showReceiveResult(names);
+    }
+
+    private void showReceiveResult(List<String> names) {
+        mConnectStatus.setVisibility(View.INVISIBLE);
+        mNames.clear();
+        mNames.addAll(names);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    private class ResultListAdapter extends ArrayAdapter<String> {
+        private List<String> mFileNames;
+
+        public ResultListAdapter(Context context, int resource,
+                                    int textViewResourceId, List<String> items) {
+            super(context, resource, textViewResourceId, items);
+            mFileNames =items;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View v = convertView;
+            if (v == null) {
+                LayoutInflater vi = (LayoutInflater) getActivity()
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                v = vi.inflate(android.R.layout.simple_expandable_list_item_1, null);
+            }
+            String fileName = mFileNames.get(position);
+            if (fileName != null) {
+                TextView nameText = (TextView) v.findViewById(android.R.id.text1);
+                nameText.setText(fileName);
+            }
+            return v;
+        }
     }
 
     public void setListener(Listener listener){

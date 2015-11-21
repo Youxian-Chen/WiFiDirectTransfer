@@ -159,10 +159,10 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
         getTransferFragment().stopDiscover();
     }
 
-    public void transferDone(){
+    public void transferDone(List<String> names){
         if (mProgressDialog != null)
             mProgressDialog.dismiss();
-        getReceiveFragment().disconnect();
+        getReceiveFragment().disconnect(names);
     }
 
     @Override
@@ -178,6 +178,7 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
             this.startService(receiveIntent);
         } else {
             if (mTransferFilesTask == null) {
+                getFragmentManager().popBackStackImmediate();
                 mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                 mProgressDialog.setProgress(0);
                 new TransferFilesTask(mSelectedFiles,

@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Youxian on 11/11/15.
@@ -29,6 +31,8 @@ public class ServerService extends IntentService {
 
     private static final String TAG = ServerService.class.getName();
     public static final String ACTION_RECEIVE = "action_receive";
+    public static final String FILES_NAME = "files_name";
+    private List<String> mFileName = new ArrayList<>();
     public ServerService(String name) {
         super(name);
     }
@@ -42,7 +46,7 @@ public class ServerService extends IntentService {
         String action = intent.getAction();
         if (ACTION_RECEIVE.equals(action)){
             Log.d(TAG, action);
-            String dirPath = android.os.Environment.getExternalStorageDirectory() + "/Music";
+            String dirPath = android.os.Environment.getExternalStorageDirectory() + "/WiFiDirectTransfer";
             File dir = new File(dirPath);
             dir.mkdirs();
             try {
@@ -76,6 +80,7 @@ public class ServerService extends IntentService {
                         bos.write(bis.read());
                     }
                     Log.d(TAG, "get file: " + fileName);
+                    mFileName.add(fileName);
                     bos.close();
                     new MediaScannerWrapper(getApplicationContext(), dirPath + "/" + fileName, "music/*").scan();
                 }
@@ -88,6 +93,7 @@ public class ServerService extends IntentService {
             }
             Intent transferDoneIntent = new Intent();
             transferDoneIntent.setAction(MainReceiver.ACTION_TRANSFER_DONE);
+            transferDoneIntent.putStringArrayListExtra(FILES_NAME, (ArrayList<String>) mFileName);
             sendBroadcast(transferDoneIntent);
             stopSelf();
         }
