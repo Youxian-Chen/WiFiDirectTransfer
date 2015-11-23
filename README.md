@@ -12,4 +12,11 @@ have fun!!!
 
 remain problems: may crash because if group owner assign not work well.
 
-still working on !!
+-------------------------------------
+
+Import one of my repositories "File Chooser", It can select multiple files to transfer
+and list what you got at received side.
+
+Delect memoried group info to avoid connecting problems.
+
+remain bugs: unstable in different devices.
