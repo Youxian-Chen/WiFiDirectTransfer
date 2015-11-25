@@ -5,8 +5,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -39,6 +41,7 @@ public class ReceiveFragment extends Fragment {
     private Listener mListener;
     private TextView mDeviceName;
     private TextView mConnectStatus;
+    private TextView mPathReceive;
     private ListView mList;
     private WifiP2pDevice mDevice;
     private Handler mHandler = new Handler();
@@ -112,10 +115,10 @@ public class ReceiveFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mDeviceName = (TextView) view.findViewById(R.id.device_text_receive);
         mConnectStatus = (TextView) view.findViewById(R.id.status_text_receive);
+        mPathReceive = (TextView) view.findViewById(R.id.path_text_receive);
         mList = (ListView) view.findViewById(R.id.list_receive);
         mNames = new ArrayList<>();
-        mAdapter = new ResultListAdapter(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, mNames);
+        mAdapter = new ResultListAdapter(getActivity(), mNames);
         mList.setAdapter(mAdapter);
     }
 
@@ -159,6 +162,10 @@ public class ReceiveFragment extends Fragment {
 
     private void showReceiveResult(List<String> names) {
         mConnectStatus.setVisibility(View.INVISIBLE);
+        mDeviceName.setVisibility(View.INVISIBLE);
+        mPathReceive.setVisibility(View.VISIBLE);
+        mPathReceive.setText("Received Files in Folder: " +
+                Environment.getExternalStorageDirectory() + "/WiFiDirectTransfer");
         mNames.clear();
         mNames.addAll(names);
         mAdapter.notifyDataSetChanged();
@@ -167,9 +174,9 @@ public class ReceiveFragment extends Fragment {
     private class ResultListAdapter extends ArrayAdapter<String> {
         private List<String> mFileNames;
 
-        public ResultListAdapter(Context context, int resource,
-                                    int textViewResourceId, List<String> items) {
-            super(context, resource, textViewResourceId, items);
+        public ResultListAdapter(Context context, List<String> items) {
+            super(context, -1, items);
+
             mFileNames =items;
         }
 
@@ -179,11 +186,11 @@ public class ReceiveFragment extends Fragment {
             if (v == null) {
                 LayoutInflater vi = (LayoutInflater) getActivity()
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                v = vi.inflate(android.R.layout.simple_expandable_list_item_1, null);
+                v = vi.inflate(R.layout.receive_list_item, null);
             }
             String fileName = mFileNames.get(position);
             if (fileName != null) {
-                TextView nameText = (TextView) v.findViewById(android.R.id.text1);
+                TextView nameText = (TextView) v.findViewById(R.id.title_receive_item);
                 nameText.setText(fileName);
             }
             return v;

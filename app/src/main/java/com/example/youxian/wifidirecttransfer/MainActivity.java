@@ -172,6 +172,7 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage("Transfer files...");
         mProgressDialog.setCancelable(false);
+
         if (info.isGroupOwner) {
             Intent receiveIntent = new Intent(this, ServerService.class);
             receiveIntent.setAction(ServerService.ACTION_RECEIVE);
@@ -224,8 +225,8 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
 
                     dos.writeInt(mFiles.size());
                     Log.d(TAG, mFiles.size()+"");
-                    int added = 100 / mFiles.size() + 1;
-                    int status = 0;
+                    int added = 100 / mFiles.size();
+                    int status = 100 % mFiles.size();
                     for (File file : mFiles){
                         //File file = new File(music.getPath());
                         Log.d(TAG, file.getPath());
