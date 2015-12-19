@@ -200,7 +200,7 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
         private String mPort;
         private List<Music> mMusics = new ArrayList<>();
         private List<File> mFiles = new ArrayList<>();
-        private static final int SOCKET_TIMEOUT = 5000;
+        private static final int SOCKET_TIMEOUT = 8000;
         public TransferFilesTask(List<File> files, String address, String port){
             //mMusics = musics;
             mFiles = files;
@@ -232,19 +232,42 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
                         Log.d(TAG, file.getPath());
                         long length = file.length();
                         dos.writeLong(length);
+                        Log.d(TAG, "length: " + length);
                         String name = file.getName();
                         dos.writeUTF(name);
                         FileInputStream fis = new FileInputStream(file);
                         BufferedInputStream bis = new BufferedInputStream(fis);
                         int theByte;
+
+                        /*
                         for (long i = 0; i < length; i++){
                             theByte = bis.read();
                             bos.write(theByte);
                         }
+                        */
+
+                        byte[] buffer = new byte[1024];
+                        while((theByte = bis.read(buffer)) > 0){
+                            bos.write(buffer, 0, theByte);
+                            bos.flush();
+                        }
                         /*
-                        while((theByte = bis.read()) != -1){
-                            bos.write(theByte);
-                        }*/
+                        int theByte;
+                        int received = 0;
+                        long remain = 0;
+                        byte[] buffer = new byte[1024];
+                        while((theByte = bis.read(buffer)) > 0 && length - received > 1023){
+                            bos.write(buffer, 0, theByte);
+                            received = received + theByte;
+                            remain = length - received;
+                            Log.d(TAG, "" + remain);
+                        }
+
+                        byte[] remainBuffer = new byte[(int) remain];
+                        while ((theByte = bis.read(remainBuffer)) > 0) {
+                            bos.write(remainBuffer, 0, theByte);
+                        }
+                        */
                         bis.close();
                         status = status + added;
                         mProgressDialog.setProgress(status);

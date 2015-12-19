@@ -9,22 +9,22 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:id="@+id/text_main"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:id="@+id/center_text_main"
+        android:layout_centerInParent="true"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="transfer files"
         android:id="@+id/transfer_button_main"
-        android:layout_above="@id/middle_text_main"
+        android:layout_above="@id/center_text_main"
         android:layout_centerHorizontal="true"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:id="@+id/middle_text_main"
-        android:layout_centerInParent="true"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/middle_text_main"
+        android:layout_below="@+id/center_text_main"
         android:layout_centerHorizontal="true"
         android:text="receive files"
         android:id="@+id/receive_button_main"/>
