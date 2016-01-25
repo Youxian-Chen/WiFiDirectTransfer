@@ -6,8 +6,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/path_text_receive"
-        android:text="path"
-        android:textSize="18dp"
+        android:text="@string/receive_path"
+        android:textSize="18sp"
         android:layout_margin="8dp"
         android:visibility="gone"/>
     <TextView
@@ -15,14 +15,14 @@
         android:layout_height="wrap_content"
         android:id="@+id/device_text_receive"
         android:layout_gravity="center_horizontal"
-        android:text="Device Name"
+        android:text="@string/device_name"
         android:layout_marginTop="20dp"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/status_text_receive"
-        android:text="Wait for connecting..."
-        android:textSize="35dp"
+        android:text="@string/receive_status"
+        android:textSize="35sp"
         android:layout_gravity="center"/>
     <ListView
         android:layout_width="match_parent"

@@ -13,9 +13,6 @@ import android.widget.Button;
  */
 public class MainFragment extends Fragment {
 
-    private Button transButton;
-    private Button receiveButton;
-
     private Listener mListener;
 
     @Override
@@ -32,7 +29,7 @@ public class MainFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        transButton = (Button) view.findViewById(R.id.transfer_button_main);
+        Button transButton = (Button) view.findViewById(R.id.transfer_button_main);
         transButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -40,7 +37,7 @@ public class MainFragment extends Fragment {
                     mListener.onTransferClick();
             }
         });
-        receiveButton = (Button) view.findViewById(R.id.receive_button_main);
+        Button receiveButton = (Button) view.findViewById(R.id.receive_button_main);
         receiveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

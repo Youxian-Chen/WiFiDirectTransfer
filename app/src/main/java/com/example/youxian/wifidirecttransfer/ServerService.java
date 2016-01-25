@@ -75,28 +75,6 @@ public class ServerService extends IntentService {
                     files[i] = new File(dirPath +"/"+ fileName);
 
                     FileOutputStream fos = new FileOutputStream(files[i]);
-                    //BufferedOutputStream bos = new BufferedOutputStream(fos);
-                    /*
-                    for(int j = 0; j < fileLength; j++){
-                        bos.write(bis.read());
-                    }
-                    */
-                    /*
-                    int theByte;
-                    int received = 0;
-                    long remain = 0;
-                    byte[] buffer = new byte[1024];
-                    while((theByte = bis.read(buffer)) > 0 && fileLength - received > 1023){
-                        bos.write(buffer, 0, theByte);
-                        received = received + theByte;
-                        remain = fileLength - received;
-                        Log.d(TAG, "" + remain);
-                    }
-                    byte[] remainBuffer = new byte[(int) remain];
-                    while((theByte = bis.read(remainBuffer)) > 0 && fileLength - received > 1023){
-                        bos.write(remainBuffer, 0, theByte);
-                    }
-                    */
                     int theByte;
                     byte[] buffer = new byte[1024];
                     while (fileLength > 0 && (theByte = dis.read(buffer, 0, (int) Math.min(buffer.length, fileLength))) != -1) {

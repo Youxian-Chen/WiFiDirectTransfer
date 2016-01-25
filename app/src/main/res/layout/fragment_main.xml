@@ -5,7 +5,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Wifi Direct Transfer"
+        android:text="@string/top_status"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:id="@+id/text_main"/>
@@ -17,7 +17,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="transfer files"
+        android:text="@string/transfer_button"
         android:id="@+id/transfer_button_main"
         android:layout_above="@id/center_text_main"
         android:layout_centerHorizontal="true"/>
@@ -26,6 +26,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/center_text_main"
         android:layout_centerHorizontal="true"
-        android:text="receive files"
+        android:text="@string/receive_button"
         android:id="@+id/receive_button_main"/>
 </RelativeLayout>

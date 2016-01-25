@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">WiFiDirectTransfer</string>
+
+    <!-- main fragment -->
+    <string name="top_status">Wifi Direct Transfer</string>
+    <string name="transfer_button">Transfer files</string>
+    <string name="receive_button">Receive files</string>
+
+    <!-- transfer fragment -->
+    <string name="find_service">finding service</string>
+
+    <!-- receive fragment -->
+    <string name="receive_path">path</string>
+    <string name="device_name">Device Name</string>
+    <string name="receive_status">Waiting for connecting</string>
 </resources>

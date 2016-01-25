@@ -34,11 +34,9 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
 
 
     private MainFragment mMainFragment;
-    private SelectFileFragment  mSelectFileFragment;
     private ReceiveFragment mReceiveFragment;
     private TransferFragment mTransferFragment;
 
-    private List<Music> mMusic;
     private TransferFilesTask mTransferFilesTask;
     private List<File> mSelectedFiles;
     private static final int File_Chooser = 1;
@@ -105,7 +103,6 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
             mMainFragment.setListener(new MainFragment.Listener() {
                 @Override
                 public void onTransferClick() {
-                    //replaceFragment(getSelectFileFragment(), true);
                     Intent fileChooserIntent = new Intent(MainActivity.this,
                             com.example.youxian.filechooser.MainActivity.class);
                     startActivityForResult(fileChooserIntent, File_Chooser);
@@ -118,26 +115,6 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
             });
         }
         return mMainFragment;
-    }
-
-    public SelectFileFragment getSelectFileFragment(){
-        if (mSelectFileFragment == null) {
-            mSelectFileFragment = new SelectFileFragment();
-            mSelectFileFragment.setListener(new SelectFileFragment.Listener() {
-                @Override
-                public void onCancelKeyClick() {
-                    getFragmentManager().popBackStackImmediate();
-                }
-
-                @Override
-                public void onOkKeyClick() {
-                    mMusic = mSelectFileFragment.getSelectedMusics();
-                    replaceFragment(getTransferFragment(), true);
-                    mTransferFragment.setFiles(mMusic);
-                }
-            });
-        }
-        return mSelectFileFragment;
     }
 
     public TransferFragment getTransferFragment(){
@@ -198,11 +175,9 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
     private class TransferFilesTask extends AsyncTask<String, Integer, Long> {
         private String mAddress;
         private String mPort;
-        private List<Music> mMusics = new ArrayList<>();
         private List<File> mFiles = new ArrayList<>();
         private static final int SOCKET_TIMEOUT = 8000;
         public TransferFilesTask(List<File> files, String address, String port){
-            //mMusics = musics;
             mFiles = files;
             mAddress = address;
             mPort = port;
@@ -228,7 +203,6 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
                     int added = 100 / mFiles.size();
                     int status = 100 % mFiles.size();
                     for (File file : mFiles){
-                        //File file = new File(music.getPath());
                         Log.d(TAG, file.getPath());
                         long length = file.length();
                         dos.writeLong(length);
@@ -238,36 +212,11 @@ public class MainActivity extends Activity implements WifiP2pManager.ConnectionI
                         FileInputStream fis = new FileInputStream(file);
                         BufferedInputStream bis = new BufferedInputStream(fis);
                         int theByte;
-
-                        /*
-                        for (long i = 0; i < length; i++){
-                            theByte = bis.read();
-                            bos.write(theByte);
-                        }
-                        */
-
                         byte[] buffer = new byte[1024];
                         while((theByte = bis.read(buffer)) > 0){
                             bos.write(buffer, 0, theByte);
                             bos.flush();
                         }
-                        /*
-                        int theByte;
-                        int received = 0;
-                        long remain = 0;
-                        byte[] buffer = new byte[1024];
-                        while((theByte = bis.read(buffer)) > 0 && length - received > 1023){
-                            bos.write(buffer, 0, theByte);
-                            received = received + theByte;
-                            remain = length - received;
-                            Log.d(TAG, "" + remain);
-                        }
-
-                        byte[] remainBuffer = new byte[(int) remain];
-                        while ((theByte = bis.read(remainBuffer)) > 0) {
-                            bos.write(remainBuffer, 0, theByte);
-                        }
-                        */
                         bis.close();
                         status = status + added;
                         mProgressDialog.setProgress(status);

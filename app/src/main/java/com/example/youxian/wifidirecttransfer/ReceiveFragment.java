@@ -38,7 +38,6 @@ public class ReceiveFragment extends Fragment {
 
     private List<String> mNames;
     private ResultListAdapter mAdapter;
-    private Listener mListener;
     private TextView mDeviceName;
     private TextView mConnectStatus;
     private TextView mPathReceive;
@@ -164,8 +163,9 @@ public class ReceiveFragment extends Fragment {
         mConnectStatus.setVisibility(View.INVISIBLE);
         mDeviceName.setVisibility(View.INVISIBLE);
         mPathReceive.setVisibility(View.VISIBLE);
-        mPathReceive.setText("Received Files in Folder: " +
-                Environment.getExternalStorageDirectory() + "/WiFiDirectTransfer");
+        String path = "Received Files in Folder: " +
+                Environment.getExternalStorageDirectory() + "/WiFiDirectTransfer";
+        mPathReceive.setText(path);
         mNames.clear();
         mNames.addAll(names);
         mAdapter.notifyDataSetChanged();
@@ -196,14 +196,4 @@ public class ReceiveFragment extends Fragment {
             return v;
         }
     }
-
-    public void setListener(Listener listener){
-        mListener = listener;
-    }
-
-    public interface Listener{
-        void onRegisterClick();
-    }
-
-
 }

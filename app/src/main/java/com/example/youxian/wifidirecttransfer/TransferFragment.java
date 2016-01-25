@@ -30,7 +30,6 @@ import java.util.List;
 public class TransferFragment extends ListFragment {
 
     private static final String TAG = TransferFragment.class.getName();
-    private List<Music> mFiles;
 
     private WifiP2pManager mWifiP2pManager;
     private WifiP2pManager.Channel mChannel;
@@ -152,11 +151,6 @@ public class TransferFragment extends ListFragment {
                 Log.d(TAG, "Failed connecting");
             }
         });
-    }
-
-    public void setFiles(List<Music> musics){
-        mFiles = musics;
-        Log.d(TAG, "Select files: " + mFiles.size());
     }
 
     public void updateList(WifiP2pDeviceList peers){

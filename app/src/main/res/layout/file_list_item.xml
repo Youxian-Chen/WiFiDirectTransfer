@@ -5,14 +5,13 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Title"
         android:layout_margin="10dp"
         android:id="@+id/title_master_item"
-        android:textSize="25dp"/>
+        android:textSize="25sp"/>
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_margin="10dp"
         android:id="@+id/checkbox_master_item"/>
 
